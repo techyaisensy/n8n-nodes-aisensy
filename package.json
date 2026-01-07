@@ -1,15 +1,29 @@
 {
-  "name": "n8n-nodes-aisensy",
-  "version": "0.1.0",
+  "name": "@aisensy/n8n-nodes-aisensy",
+  "version": "0.1.2",
   "description": "n8n custom node for Aisensy API campaign operations",
   "keywords": [
-    "n8n-community-node-package"
+    "n8n-community-node-package",
+    "n8n-nodes",
+    "n8n",
+    "aisensy",
+    "whatsapp",
+    "whatsapp business",
+    "whatsapp api",
+    "marketing",
+    "automation",
+    "messaging",
+    "campaign",
+    "broadcast",
+    "crm",
+    "low-code",
+    "workflow"
   ],
   "license": "MIT",
   "homepage": "",
   "author": {
-    "name": "",
-    "email": ""
+    "name": "Chetan Sable",
+    "email": "apps@aisensy.com"
   },
   "repository": {
     "type": "git",
@@ -27,7 +41,7 @@
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes credentials package.json",
     "lintfix": "eslint nodes credentials package.json --fix",
-    "prepublishOnly": "npm run build && npm run lint -s"
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "dist"

@@ -1,101 +1,98 @@
-# n8n-nodes-aisensy
+# 🟢 AiSensy for n8n
 
-Custom n8n node for Aisensy API campaign operations.
+[![npm version](https://badge.fury.io/js/@aisensy%2Fn8n-nodes-aisensy.svg)](https://www.npmjs.com/package/@aisensy/n8n-nodes-aisensy)
 
-## Features
+**Official AiSensy Integration**
 
-- **Get Campaign Details**: Fetch campaign information and template details
-- **Send Campaign Message**: Send WhatsApp campaign messages via Aisensy API
+This is the official n8n node for [AiSensy](https://aisensy.com/), the complete WhatsApp Marketing platform based on the Official WhatsApp Business API.
 
-## Installation
+Use this node to automate sending WhatsApp campaign messages, notifications, and fetching campaign details directly within your n8n workflows.
 
-### Local Development
+## ✨ Features
 
-1. Clone or navigate to this directory:
+*   **Send WhatsApp Campaigns**: Trigger template messages programmatically via the AiSensy API.
+*   **Dynamic Parameters**: Support for variable template parameters (e.g., `{{1}}`, `{{name}}`).
+*   **Fetch Metadata**: specific campaign details and template metadata.
+
+## 🚀 Installation
+
+### Option 1: Via n8n Interface (Recommended)
+1.  Open your n8n instance.
+2.  Go to **Settings** > **Community Nodes**.
+3.  Select **Install**.
+4.  Enter the package name: `@aisensy/n8n-nodes-aisensy`
+
+### Option 2: Via CLI
+If you are running n8n via npm or Docker, you can install it in your n8n root directory (usually `~/.n8n`):
+
 ```bash
-cd /Users/chetansable/Developer/Personal/n8n-nodes-aisensy
+npm install @aisensy/n8n-nodes-aisensy
 ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+*Note: Restart n8n after installation.*
 
-3. Build the node:
-```bash
-npm run build
-```
+## 🔑 Credentials Setup
 
-4. Link to your local n8n installation:
-```bash
-npm link
-cd /Users/chetansable/Developer/Personal/n8n/n8n-data/.n8n/nodes
-npm link n8n-nodes-aisensy
-```
+To use this node, you need an API Key from your AiSensy dashboard.
 
-5. Start n8n:
-```bash
-cd /Users/chetansable/Developer/Personal/n8n
-npm start
-```
+1.  Log in to [AiSensy](https://aisensy.com/).
+2.  Navigate to **Manage** > **API Key** in your project settings.
+3.  Copy the API Key.
+4.  In n8n, create a new credential of type **AiSensy API**.
+5.  Paste your key and click **Save**.
 
-## Usage
+## 🛠️ Usage
 
-### Setting Up Credentials
+Add the **AiSensy** node to your workflow and select one of the following operations:
 
-1. Get your API key from Aisensy:
-   - Go to AiSensy -> Open your project -> Go to manage page -> Copy API key
-   - Reference: https://wiki.aisensy.com/en/articles/11501891-how-to-setup-whatsapp-api-campaigns-in-aisensy
+### 1. Send Message
+Send a WhatsApp template message to a user.
 
-2. In n8n, create new credentials:
-   - Select "AiSensy API" credential type
-   - Enter your API key
+*   **Campaign Name**: The exact name of the campaign created in AiSensy.
+*   **Destination**: The recipient's phone number (with country code, e.g., `919876543210`).
+*   **Template Parameters**: Add one entry for each variable in your template (e.g., Value 1 for `{{1}}`).
+*   **Optional Fields**:
+    *   **User Name**: Name of the user for dashboard tracking.
+    *   **Source**: Defaults to `n8n`.
+    *   **Attributes**: JSON object for custom user attributes.
 
-### Get Campaign Details
+### 2. Get Campaign Details
+Retrieve metadata about a specific campaign.
 
-1. Add the AiSensy node to your workflow
-2. Select operation: "Get Campaign Details"
-3. Enter the campaign name
-4. Execute the node to fetch campaign details and template information
+*   **Campaign Name**: The name of the campaign to fetch.
+*   **Output**: Returns template status, formatted parameters, and campaign ID.
 
-### Send Campaign Message
+## 💻 Local Development
 
-1. Add the AiSensy node to your workflow
-2. Select operation: "Send Message"
-3. Configure:
-   - Campaign Name
-   - Destination (phone number, e.g., 917024124397)
-   - Template Parameters (add one for each template parameter)
-   - User Name (optional)
-   - Source (default: "n8n")
-   - Attributes (optional JSON object)
-   - Params Fallback Value (optional JSON object)
+If you want to modify or contribute to this node:
 
-## API Endpoints
+1.  **Clone & Install**:
+    ```bash
+    git clone https://github.com/techyaisensy/n8n-nodes-aisensy.git
+    npm install
+    ```
 
-- **Get Campaign Details**: `POST https://backend.aisensy.com/stg/campaign/t1/api/campaign-details`
-- **Send Message**: `POST https://backend.aisensy.com/stg/campaign/t1/api/v2`
+2.  **Build & Link**:
+    ```bash
+    npm run build
+    npm link
+    ```
 
-## Development
+3.  **Link to n8n**:
+    ```bash
+    cd /path/to/your/n8n/installation
+    npm link n8n-nodes-aisensy
+    ```
 
-### Build
-```bash
-npm run build
-```
+4.  **Watch Mode**:
+    ```bash
+    npm run dev
+    ```
 
-### Watch Mode
-```bash
-npm run dev
-```
-
-### Lint
-```bash
-npm run lint
-```
-
-## License
-
+## 📄 License
 MIT
 
+---
 
-# n8n-nodes-aisensy
+## 🏷️ Keywords
+[AiSensy](https://www.npmjs.com/search?q=keywords:aisensy) • [n8n](https://www.npmjs.com/search?q=keywords:n8n) • [WhatsApp](https://www.npmjs.com/search?q=keywords:whatsapp) • [WhatsApp Business](https://www.npmjs.com/search?q=keywords:whatsapp-business) • [Marketing](https://www.npmjs.com/search?q=keywords:marketing) • [Automation](https://www.npmjs.com/search?q=keywords:automation) • [Workflow](https://www.npmjs.com/search?q=keywords:workflow) • [Broadcast](https://www.npmjs.com/search?q=keywords:broadcast) • [Low-code](https://www.npmjs.com/search?q=keywords:low-code)

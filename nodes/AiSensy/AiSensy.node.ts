@@ -167,7 +167,7 @@ export class AiSensy implements INodeType {
 
           const options: any = {
             method: "POST",
-            uri: "https://backend.aisensy.com/stg/campaign/t1/api/campaign-details",
+            uri: "https://backend.aisensy.com/campaign/t1/api/campaign-details",
             headers: {
               "Content-Type": "application/json",
             },
@@ -529,7 +529,7 @@ export class AiSensy implements INodeType {
 
           const options: any = {
             method: "POST",
-            uri: "https://backend.aisensy.com/stg/campaign/t1/api/v2",
+            uri: "https://backend.aisensy.com/campaign/t1/api/v2",
             headers: {
               "Content-Type": "application/json",
             },
