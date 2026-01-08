@@ -4,14 +4,9 @@ import {
   INodeExecutionData,
   INodeType,
   INodeTypeDescription,
-  IRequestOptions,
-  NodePropertyTypes,
   ResourceMapperFields,
   ResourceMapperField,
-  IHookFunctions,
 } from "n8n-workflow";
-
-import { OptionsWithUri } from "request";
 
 // Cache to store API responses by campaign name
 const campaignDataCache = new Map<string, any>();
@@ -102,23 +97,17 @@ export class AiSensy implements INodeType {
       async getCampaignRequestSchema(
         this: ILoadOptionsFunctions
       ): Promise<ResourceMapperFields> {
-        console.log("=== getCampaignRequestSchema called ===");
         try {
           const credentials = await this.getCredentials("aiSensyApi");
           const apiKey = credentials.apiKey as string;
-          console.log("API Key retrieved:", apiKey ? "Yes" : "No");
 
           const campaignName = this.getNodeParameter(
             "campaignName",
             0
           ) as string;
-          console.log("Campaign Name:", campaignName);
 
           // Check if there's an existing messageData with a schema
           let existingCampaignName: string | null = null;
-          console.log(
-            "🔍 Checking for existing schema to detect campaign name changes..."
-          );
           try {
             const existingMessageData = this.getNodeParameter(
               "messageData",
@@ -134,31 +123,13 @@ export class AiSensy implements INodeType {
               existingMessageData.schema &&
               existingMessageData.schema.length > 0
             ) {
-              console.log(
-                "✅ Existing schema found with",
-                existingMessageData.schema.length,
-                "fields"
-              );
-              console.log(
-                "📋 Schema field IDs:",
-                existingMessageData.schema.map((f) => f.id).join(", ")
-              );
               // We'll detect the mismatch after fetching new data
-            } else {
-              console.log(
-                "ℹ️ No existing schema found - this is the first time loading fields"
-              );
             }
           } catch (e) {
             // No existing messageData, that's fine
-            console.log(
-              "ℹ️ No existing messageData found (first time or error):",
-              e
-            );
           }
 
           if (!campaignName) {
-            console.log("No campaign name provided");
             return {
               fields: [],
               emptyFieldsNotice: "Please provide a Campaign Name first",
@@ -167,7 +138,7 @@ export class AiSensy implements INodeType {
 
           const options: any = {
             method: "POST",
-            uri: "https://backend.aisensy.com/campaign/t1/api/campaign-details",
+            url: "https://backend.aisensy.com/campaign/t1/api/campaign-details",
             headers: {
               "Content-Type": "application/json",
             },
@@ -178,19 +149,13 @@ export class AiSensy implements INodeType {
             json: true,
           };
 
-          console.log("Making API request...");
-          const responseData = await this.helpers.request(options);
-          console.log(
-            "API Response received:",
-            JSON.stringify(responseData, null, 2)
-          );
+          const responseData = await this.helpers.httpRequest(options);
 
           // Cache the response data for reuse in getMessageFormatTemplate
           campaignDataCache.set(campaignName, responseData);
 
           // Check if response is successful
           if (!responseData || !responseData.success) {
-            console.log("API response not successful or missing success field");
             return {
               fields: [],
               emptyFieldsNotice:
@@ -208,13 +173,7 @@ export class AiSensy implements INodeType {
             requestBody = responseData.campaign.requestBody;
           }
 
-          console.log(
-            "Request Body extracted:",
-            JSON.stringify(requestBody, null, 2)
-          );
-
           if (!requestBody) {
-            console.log("No requestBody found in response");
             return {
               fields: [],
               emptyFieldsNotice:
@@ -224,13 +183,10 @@ export class AiSensy implements INodeType {
           }
 
           const templateParams = requestBody.templateParams || [];
-          console.log("Template Params count:", templateParams.length);
 
           // Check if there's an existing schema with a different campaign name
           let campaignNameMismatch = false;
           let existingSchemaCampaignName: string | null = null;
-          console.log("🔍 Monitoring campaign name changes...");
-          console.log("📝 Current Campaign Name:", campaignName);
           try {
             const existingMessageData = this.getNodeParameter(
               "messageData",
@@ -246,9 +202,6 @@ export class AiSensy implements INodeType {
               existingMessageData.schema &&
               existingMessageData.schema.length > 0
             ) {
-              console.log(
-                "🔎 Searching for campaign name in existing schema..."
-              );
               // Look for a hidden field that stores the campaign name
               const campaignNameField = existingMessageData.schema.find(
                 (f) => f.id === "__campaignName__"
@@ -257,61 +210,20 @@ export class AiSensy implements INodeType {
                 existingSchemaCampaignName = String(
                   campaignNameField.defaultValue
                 );
-                console.log(
-                  "📌 Previous Campaign Name (from schema):",
-                  existingSchemaCampaignName
-                );
-                console.log(
-                  "📌 Current Campaign Name (from parameter):",
-                  campaignName
-                );
 
                 if (existingSchemaCampaignName !== campaignName) {
                   campaignNameMismatch = true;
-                  console.log("⚠️ ========================================");
-                  console.log("⚠️ CAMPAIGN NAME CHANGE DETECTED!");
-                  console.log("⚠️ ========================================");
-                  console.log(
-                    "⚠️ Previous Campaign Name:",
-                    existingSchemaCampaignName
-                  );
-                  console.log("⚠️ New Campaign Name:", campaignName);
-                  console.log(
-                    "⚠️ Change Detected:",
-                    existingSchemaCampaignName,
-                    "→",
-                    campaignName
-                  );
-                  console.log("⚠️ ========================================");
-                } else {
-                  console.log("✅ Campaign name matches - no change detected");
                 }
-              } else {
-                console.log(
-                  "ℹ️ No campaign name field found in existing schema (first time or old schema)"
-                );
               }
-            } else {
-              console.log(
-                "ℹ️ No existing schema to compare - this is a fresh load"
-              );
             }
           } catch (e) {
             // No existing messageData or error accessing it
-            console.log(
-              "⚠️ Could not check existing schema for campaign name:",
-              e
-            );
           }
 
           const fields: ResourceMapperField[] = [];
 
           // Add a hidden field to store the campaign name used for this schema
           // This allows us to detect changes later
-          console.log(
-            "💾 Storing campaign name in hidden field for future change detection:",
-            campaignName
-          );
           fields.push({
             id: "__campaignName__",
             displayName: "Campaign Name (Internal)",
@@ -373,27 +285,8 @@ export class AiSensy implements INodeType {
             });
           }
 
-          console.log("📊 Summary:");
-          console.log("  - Total fields:", fields.length);
-          console.log("  - Field IDs:", fields.map((f) => f.id).join(", "));
-          console.log("  - Campaign name stored:", campaignName);
-          console.log(
-            "  - Campaign name change detected:",
-            campaignNameMismatch ? "YES ⚠️" : "NO ✅"
-          );
-          if (campaignNameMismatch && existingSchemaCampaignName) {
-            console.log(
-              "  - Previous campaign name:",
-              existingSchemaCampaignName
-            );
-            console.log("  - New campaign name:", campaignName);
-          }
-
           // Always return at least destination field for debugging
           if (fields.length === 0) {
-            console.log(
-              "WARNING: No fields to return, adding destination anyway"
-            );
             fields.push({
               id: "destination",
               displayName: "Destination (Phone Number)",
@@ -407,25 +300,16 @@ export class AiSensy implements INodeType {
           // If campaign name changed, add a warning notice
           if (campaignNameMismatch && existingSchemaCampaignName) {
             const warningMessage = `⚠️ Warning: The Campaign Name has changed from "${existingSchemaCampaignName}" to "${campaignName}". The fields below have been refreshed for the new campaign. Please review and update your field mappings if needed.`;
-            console.log(
-              "📢 Returning fields with campaign name change warning"
-            );
-            console.log("📢 Warning message:", warningMessage);
             return {
               fields,
               emptyFieldsNotice: warningMessage,
             };
           }
 
-          console.log(
-            "✅ Returning fields without warnings - campaign name unchanged or first load"
-          );
           return {
             fields,
           };
         } catch (error: any) {
-          console.error("Error in getCampaignRequestSchema:", error);
-          console.error("Error stack:", error.stack);
           return {
             fields: [],
             emptyFieldsNotice: `Error loading schema: ${error.message}`,
@@ -529,7 +413,7 @@ export class AiSensy implements INodeType {
 
           const options: any = {
             method: "POST",
-            uri: "https://backend.aisensy.com/campaign/t1/api/v2",
+            url: "https://backend.aisensy.com/campaign/t1/api/v2",
             headers: {
               "Content-Type": "application/json",
             },
@@ -537,7 +421,7 @@ export class AiSensy implements INodeType {
             json: true,
           };
 
-          const responseData = await this.helpers.request(options);
+          const responseData = await this.helpers.httpRequest(options);
 
           returnData.push({
             json: responseData,

@@ -12,9 +12,7 @@ const DIST_DIR = path.join(CURRENT_DIR, 'dist');
 
 // Function to copy dist to n8n directory
 function syncToN8n() {
-  try {
-    console.log('\n🔄 Syncing to n8n...');
-    
+  try {    
     // Create directories if they don't exist
     if (!fs.existsSync(N8N_CUSTOM_DIR)) {
       fs.mkdirSync(N8N_CUSTOM_DIR, { recursive: true });
@@ -47,15 +45,11 @@ function syncToN8n() {
         path.join(NODE_DIR, 'package.json'),
         JSON.stringify(n8nPkg, null, 2)
       );
-      
-      console.log('✅ Synced to n8n successfully!');
-      console.log('   Location:', NODE_DIR);
-      console.log('   Refresh n8n browser to see changes\n');
     } else {
-      console.log('⚠️  dist folder not found, skipping sync\n');
+      // console.log('⚠️  dist folder not found, skipping sync\n');
     }
   } catch (error) {
-    console.error('❌ Error syncing to n8n:', error.message);
+    // console.error('❌ Error syncing to n8n:', error.message);
   }
 }
 
@@ -81,7 +75,7 @@ function copyRecursiveSync(src, dest) {
 }
 
 // Initial sync
-console.log('🚀 Starting watch mode with auto-sync to n8n...\n');
+// console.log('🚀 Starting watch mode with auto-sync to n8n...\n');
 syncToN8n();
 
 // Watch for changes in dist folder
@@ -93,27 +87,27 @@ const watcher = watch(DIST_DIR, {
 
 watcher
   .on('change', (filePath) => {
-    console.log(`📝 File changed: ${path.relative(CURRENT_DIR, filePath)}`);
+    // console.log(`📝 File changed: ${path.relative(CURRENT_DIR, filePath)}`);
     syncToN8n();
   })
   .on('add', (filePath) => {
-    console.log(`➕ File added: ${path.relative(CURRENT_DIR, filePath)}`);
+    // console.log(`➕ File added: ${path.relative(CURRENT_DIR, filePath)}`);
     syncToN8n();
   })
   .on('unlink', (filePath) => {
-    console.log(`🗑️  File removed: ${path.relative(CURRENT_DIR, filePath)}`);
+    // console.log(`🗑️  File removed: ${path.relative(CURRENT_DIR, filePath)}`);
     syncToN8n();
   })
   .on('error', error => {
-    console.error('❌ Watcher error:', error);
+    // console.error('❌ Watcher error:', error);
   });
 
-console.log('👀 Watching for changes in dist/ folder...');
-console.log('   Press Ctrl+C to stop\n');
+// console.log('👀 Watching for changes in dist/ folder...');
+// console.log('   Press Ctrl+C to stop\n');
 
 // Handle cleanup
 process.on('SIGINT', () => {
-  console.log('\n\n👋 Stopping watcher...');
+  // console.log('\n\n👋 Stopping watcher...');
   watcher.close();
   process.exit(0);
 });
