@@ -1,5 +1,5 @@
 {
-  "name": "@aisensy/n8n-nodes-aisensy",
+  "name": "n8n-nodes-aisensy",
   "version": "0.1.4",
   "description": "n8n custom node for Aisensy API campaign operations",
   "keywords": [
